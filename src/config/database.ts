@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 export const connectDB = async (mongoUri: string) => {
   try {
     await mongoose.connect(mongoUri);
-    console.log("✅ MongoDB connected successfully!");
+    console.log(" MongoDB connected successfully!");
   } catch (err) {
-    console.error("❌ MongoDB connection error:", err);
+    console.error(" MongoDB connection error:", err);
     throw err;
   }
 };

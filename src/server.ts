@@ -11,11 +11,11 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/agriconnec
   try {
     await connectDB(MONGO_URI);
     app.listen(PORT, () => {
-      console.log(`✅ Server running: http://localhost:${PORT}`);
-      console.log(`📚 Swagger UI: http://localhost:${PORT}/api-docs`);
+      console.log(` Server running: http://localhost:${PORT}`);
+      console.log(` Swagger UI: http://localhost:${PORT}/api-docs`);
     });
   } catch (err) {
-    console.error("❌ Failed to start server", err);
+    console.error(" Failed to start server", err);
     process.exit(1);
   }
 })();
