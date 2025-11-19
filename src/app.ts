@@ -1,8 +1,11 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./docs/swagger.json";
+
+// Routes
 import healthRoute from "./routes/health";
+import authRoute from "./routes/auth.routes";
 
 const app: Application = express();
 
@@ -12,13 +15,20 @@ app.use(express.json());
 
 // Routes
 app.use("/health", healthRoute);
+app.use("/api/auth", authRoute);
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Test route
-app.get("/", (req, res) => {
+// Test root route
+app.get("/", (req: Request, res: Response) => {
   res.send("🌿 AgriConnect API is running...");
+});
+
+// Global error handler
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something went wrong!" });
 });
 
 export default app;

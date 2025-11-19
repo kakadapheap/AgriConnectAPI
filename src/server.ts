@@ -1,21 +1,28 @@
 import dotenv from "dotenv";
-dotenv.config(); // Must be first
-
 import app from "./app";
-import { connectDB } from "./config/database";
+import mongoose from "mongoose";
+
+dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/agriconnect";
 
-(async () => {
+// Connect to MongoDB
+const connectDB = async () => {
   try {
-    await connectDB(MONGO_URI);
-    app.listen(PORT, () => {
-      console.log(` Server running: http://localhost:${PORT}`);
-      console.log(` Swagger UI: http://localhost:${PORT}/api-docs`);
-    });
-  } catch (err) {
-    console.error(" Failed to start server", err);
+    await mongoose.connect(MONGO_URI);
+    console.log("✅ MongoDB connected successfully");
+  } catch (error) {
+    console.error("❌ MongoDB connection failed:", error);
     process.exit(1);
   }
+};
+
+// Start server
+(async () => {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
+    console.log(`📄 Swagger UI: http://localhost:${PORT}/api-docs`);
+  });
 })();
