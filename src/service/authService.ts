@@ -1,6 +1,6 @@
-import User from "../models/user.model";
-import Role from "../models/role.model";
-import UserRole from "../models/user_role.model";
+import User from "../models/userModel";
+import Role from "../models/roleModel";
+import UserRole from "../models/userRoleModel";
 import {hashPassword, comparePassword} from "../utils/bcrypt.util";
 import { generateToken } from "../utils/jwt.util";
 
