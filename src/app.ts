@@ -4,8 +4,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./docs/swagger.json";
 
 // Routes
-import healthRoute from "./routes/health";
-import authRoute from "./routes/auth.routes";
+import authRoute from "./routes/authRoutes";
 
 const app: Application = express();
 
@@ -14,7 +13,6 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/health", healthRoute);
 app.use("/api/auth", authRoute);
 
 // Swagger UI

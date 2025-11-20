@@ -1,27 +1,108 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "AgriConnect API",
+    "title": "AgriConnect API Documentation",
     "version": "1.0.0",
-    "description": "API documentation for AgriConnect"
+    "description": "API documentation for User, Auth, Roles, Products, Orders."
   },
+
   "servers": [
-    { "url": "http://localhost:5000", "description": "Local server" }
+    {
+      "url": "http://localhost:5000",
+      "description": "Local server"
+    }
   ],
+
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+
+    "schemas": {
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["firstName", "email", "password", "phone"],
+        "properties": {
+          "firstName": { "type": "string", "example": "John" },
+          "lastName": { "type": "string", "example": "Doe" },
+          "email": { "type": "string", "example": "john@example.com" },
+          "password": { "type": "string", "example": "123456" },
+          "phone": { "type": "string", "example": "0123456789" },
+          "address": { "type": "string", "example": "Phnom Penh" },
+          "role": { "type": "string", "example": "farmer" }
+        }
+      },
+
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "example": "john@example.com" },
+          "password": { "type": "string", "example": "123456" }
+        }
+      }
+    }
+  },
+
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+
   "paths": {
-    "/": {
-      "get": {
-        "summary": "Root endpoint",
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register new user",
+        "description": "Creates a new user account.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "200": { "description": "Server is running" }
+          "201": {
+            "description": "User registered successfully"
+          },
+          "400": {
+            "description": "Email already registered"
+          }
         }
       }
     },
-    "/health": {
-      "get": {
-        "summary": "Health check",
+
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login user",
+        "description": "Login using email and password. Returns JWT token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "200": { "description": "API is healthy" }
+          "200": {
+            "description": "Login successful"
+          },
+          "401": {
+            "description": "Invalid login credentials"
+          }
         }
       }
     }
