@@ -1,32 +1,26 @@
-import express, { Application, Request, Response, NextFunction } from "express";
+import express from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./docs/swagger.json";
 
 // Routes
 import authRoute from "./routes/authRoutes";
+import roleRoute from "./routes/roleRoutes";
+import userRoleRoute from "./routes/userRoleRoutes";
 
-const app: Application = express();
+const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// Route mounting
 app.use("/api/auth", authRoute);
+app.use("/api/roles", roleRoute);
+app.use("/api/user-roles", userRoleRoute);
 
-// Swagger UI
+// Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Test root route
-app.get("/", (req: Request, res: Response) => {
-  res.send("🌿 AgriConnect API is running...");
-});
-
-// Global error handler
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
-});
+app.get("/", (req, res) => res.send("🌿 AgriConnect API is running..."));
 
 export default app;

@@ -32,8 +32,7 @@
           "email": { "type": "string", "example": "john@example.com" },
           "password": { "type": "string", "example": "123456" },
           "phone": { "type": "string", "example": "0123456789" },
-          "address": { "type": "string", "example": "Phnom Penh" },
-          "role": { "type": "string", "example": "farmer" }
+          "address": { "type": "string", "example": "Phnom Penh" }
         }
       },
 
