@@ -3,6 +3,7 @@ import { SecureClientSessionOptions } from "http2";
 import mongoose, {Schema, Document} from "mongoose";
 
 export interface IUser extends Document {
+    _id: mongoose.Types.ObjectId;
     firstName: string;
     lastName: string;
     email: string;
