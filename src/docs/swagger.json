@@ -1,18 +1,13 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "AgriConnect API Documentation",
+    "title": "AgriConnect API",
     "version": "1.0.0",
-    "description": "API documentation for User, Auth, Roles, Products, Orders."
+    "description": "API documentation for Auth, Products, Orders, and OrderItems"
   },
-
   "servers": [
-    {
-      "url": "http://localhost:5000",
-      "description": "Local server"
-    }
+    { "url": "http://localhost:5000", "description": "Local server" }
   ],
-
   "components": {
     "securitySchemes": {
       "bearerAuth": {
@@ -21,7 +16,6 @@
         "bearerFormat": "JWT"
       }
     },
-
     "schemas": {
       "RegisterRequest": {
         "type": "object",
@@ -35,7 +29,6 @@
           "address": { "type": "string", "example": "Phnom Penh" }
         }
       },
-
       "LoginRequest": {
         "type": "object",
         "required": ["email", "password"],
@@ -43,40 +36,52 @@
           "email": { "type": "string", "example": "john@example.com" },
           "password": { "type": "string", "example": "123456" }
         }
+      },
+      "ProductRequest": {
+        "type": "object",
+        "required": ["name", "price", "stock"],
+        "properties": {
+          "name": { "type": "string", "example": "Tomato" },
+          "description": { "type": "string", "example": "Fresh organic tomato" },
+          "price": { "type": "number", "example": 2.5 },
+          "stock": { "type": "integer", "example": 100 },
+          "image": { "type": "string", "example": "tomato.png" },
+          "farmer_id": { "type": "string", "example": "user_id_here" }
+        }
+      },
+      "OrderRequest": {
+        "type": "object",
+        "required": ["farmer_id", "totalAmount"],
+        "properties": {
+          "farmer_id": { "type": "string", "example": "user_id_here" },
+          "totalAmount": { "type": "number", "example": 50.0 }
+        }
+      },
+      "OrderItemRequest": {
+        "type": "object",
+        "required": ["order_id", "product_id", "quantity", "price"],
+        "properties": {
+          "order_id": { "type": "string", "example": "order_id_here" },
+          "product_id": { "type": "string", "example": "product_id_here" },
+          "quantity": { "type": "integer", "example": 10 },
+          "price": { "type": "number", "example": 2.5 }
+        }
       }
     }
   },
-
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-
+  "security": [{ "bearerAuth": [] }],
   "paths": {
     "/api/auth/register": {
       "post": {
         "tags": ["Auth"],
         "summary": "Register new user",
-        "description": "Creates a new user account.",
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegisterRequest"
-              }
-            }
+            "application/json": { "schema": { "$ref": "#/components/schemas/RegisterRequest" } }
           }
         },
-        "responses": {
-          "201": {
-            "description": "User registered successfully"
-          },
-          "400": {
-            "description": "Email already registered"
-          }
-        }
+        "responses": { "201": { "description": "User registered successfully" } }
       }
     },
 
@@ -84,25 +89,149 @@
       "post": {
         "tags": ["Auth"],
         "summary": "Login user",
-        "description": "Login using email and password. Returns JWT token.",
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
-              }
-            }
+            "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } }
           }
         },
-        "responses": {
-          "200": {
-            "description": "Login successful"
-          },
-          "401": {
-            "description": "Invalid login credentials"
+        "responses": { "200": { "description": "Login successful" } }
+      }
+    },
+
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Logout user",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Logout successful" } }
+      }
+    },
+
+    "/api/products": {
+      "post": {
+        "tags": ["Products"],
+        "summary": "Create product",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ProductRequest" } }
           }
-        }
+        },
+        "responses": { "201": { "description": "Product created" } }
+      },
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get all products",
+        "responses": { "200": { "description": "List of all products" } }
+      }
+    },
+
+    "/api/products/{id}": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get single product",
+        "parameters": [
+          { "name": "id", "in": "path", "schema": { "type": "string" }, "required": true }
+        ],
+        "responses": { "200": { "description": "Product found" } }
+      },
+      "put": {
+        "tags": ["Products"],
+        "summary": "Update product",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "schema": { "type": "string" }, "required": true }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ProductRequest" } }
+          }
+        },
+        "responses": { "200": { "description": "Product updated" } }
+      },
+      "delete": {
+        "tags": ["Products"],
+        "summary": "Delete product",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "schema": { "type": "string" }, "required": true }
+        ],
+        "responses": { "200": { "description": "Product deleted" } }
+      }
+    },
+
+    "/api/orders": {
+      "post": {
+        "tags": ["Orders"],
+        "summary": "Create order",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/OrderRequest" } }
+          }
+        },
+        "responses": { "201": { "description": "Order created" } }
+      },
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Get all orders",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "List of orders" } }
+      }
+    },
+
+    "/api/orders/{id}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Get single order",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Order details" } }
+      },
+      "put": {
+        "tags": ["Orders"],
+        "summary": "Update order",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/OrderRequest" } }
+          }
+        },
+        "responses": { "200": { "description": "Order updated" } }
+      },
+      "delete": {
+        "tags": ["Orders"],
+        "summary": "Delete order",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Order deleted" } }
+      }
+    },
+
+    "/api/order-items": {
+      "post": {
+        "tags": ["OrderItems"],
+        "summary": "Create order item",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/OrderItemRequest" } }
+          }
+        },
+        "responses": { "201": { "description": "Order item created" } }
       }
     }
   }

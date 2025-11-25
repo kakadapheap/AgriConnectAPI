@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import app from "./app";
 import { seedRoles } from "./seeders/roleSeeder";
 import { adminSeeder } from "./seeders/adminSeeder";
+import { categorySeeder } from "./seeders/categorySeeder";
 
 dotenv.config();
 
@@ -20,6 +21,9 @@ const startServer = async () => {
 
     // 3. Seed default admin user
     await adminSeeder();
+
+    // seed category
+    await categorySeeder();
 
     // 4. Start the server
     app.listen(PORT, () => {
