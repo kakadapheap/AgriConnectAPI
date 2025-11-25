@@ -7,6 +7,7 @@ import swaggerDocument from "./docs/swagger.json";
 import authRoute from "./routes/authRoutes";
 import roleRoute from "./routes/roleRoutes";
 import userRoleRoute from "./routes/userRoleRoutes";
+import categoryRoutes from "./routes/categoryRoutes";
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use(express.json());
 app.use("/api/auth", authRoute);
 app.use("/api/roles", roleRoute);
 app.use("/api/user-roles", userRoleRoute);
-
+app.use("/api/categories", categoryRoutes);
 // Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
