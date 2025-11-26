@@ -7,16 +7,18 @@ export interface IProduct extends Document {
   stock: number;
   image?: string;
   farmer_id: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-const productSchema = new Schema(
+const productSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true },
-    description: String,
+    description: { type: String },
     price: { type: Number, required: true },
     stock: { type: Number, required: true },
-    image: String,
-    farmer_id: { type: Schema.Types.ObjectId, ref: "User", required: true }
+    image: { type: String },
+    farmer_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );
