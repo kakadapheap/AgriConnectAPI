@@ -1,36 +1,26 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import { JwtPayloadCustom } from "../types/jwtPayload";
 
-// Extend Request interface to include user
 export interface AuthRequest extends Request {
-  user?: string | JwtPayload; // decoded JWT payload
+  user?: JwtPayloadCustom; // decoded JWT payload
 }
 
-// Middleware to authenticate JWT token
-export const authenticate = (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction ) => {
+export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    // Get Authorization header
     const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ message: "No token found. Unauthorized" });
 
-    if (!authHeader) {
-      return res.status(401).json({ message: "No token found. Unauthorized" });
-    }
-
-    // Expected format: "Bearer <token>"
     const token = authHeader.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({ message: "Token missing. Unauthorized" });
-    }
+    if (!token) return res.status(401).json({ message: "Token missing. Unauthorized" });
 
     const secret = process.env.JWT_SECRET;
     if (!secret) throw new Error("JWT secret not defined in environment");
 
-    // Verify token
-    const decoded = jwt.verify(token, secret);
-    req.user = decoded; // Attach decoded payload to request
+    // Cast the decoded token to our custom type
+    const decoded = jwt.verify(token, secret) as JwtPayloadCustom;
+
+    req.user = decoded;
 
     next();
   } catch (error: any) {

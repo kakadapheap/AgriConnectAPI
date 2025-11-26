@@ -1,36 +1,38 @@
-import { Request, Response } from "express";
-import Order from "../models/orderModel";
+import { Response } from "express";
+import { AuthRequest } from "../middleware/authMiddleware";
+import * as orderService from "../services/orderService";
 
-export const createOrder = async (req: Request, res: Response) => {
+export const create = async (req: AuthRequest, res: Response) => {
   try {
-    const order = await Order.create(req.body);
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+
+    const order = await orderService.createOrder({
+      ...req.body,
+      farmer_id: req.user.user_id,
+    });
     res.status(201).json({ message: "Order created", order });
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
   }
 };
 
-export const getOrders = async (req: Request, res: Response) => {
-  const orders = await Order.find().populate("farmer_id");
+export const getAll = async (_req: AuthRequest, res: Response) => {
+  const orders = await orderService.getOrders();
   res.json(orders);
 };
 
-export const getOrder = async (req: Request, res: Response) => {
-  const order = await Order.findById(req.params.id);
-  if (!order) return res.status(404).json({ error: "Not found" });
+export const getOne = async (req: AuthRequest, res: Response) => {
+  const order = await orderService.getOrderById(req.params.id);
+  if (!order) return res.status(404).json({ message: "Order not found" });
   res.json(order);
 };
 
-export const updateOrder = async (req: Request, res: Response) => {
-  const order = await Order.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.json({ message: "Order updated", order });
+export const update = async (req: AuthRequest, res: Response) => {
+  const updated = await orderService.updateOrder(req.params.id, req.body);
+  res.json({ message: "Updated", updated });
 };
 
-export const deleteOrder = async (req: Request, res: Response) => {
-  await Order.findByIdAndDelete(req.params.id);
-  res.json({ message: "Order deleted" });
+export const remove = async (req: AuthRequest, res: Response) => {
+  await orderService.deleteOrder(req.params.id);
+  res.json({ message: "Deleted" });
 };
