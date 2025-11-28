@@ -6,13 +6,15 @@ export const create = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
+    console.log("fadfasfdsf",req.user)
     const product = await productService.createProduct({
       ...req.body,
       farmer_id: req.user.user_id,
     });
     res.status(201).json({ message: "Product created", product });
   } catch (err: any) {
-    res.status(400).json({ message: err.message });
+    console.log("err", err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
